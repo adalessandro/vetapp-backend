@@ -1,5 +1,5 @@
 import { Injectable, Inject } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { FindOptionsWhere, Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
@@ -15,6 +15,8 @@ export class UsersService {
     const user = new User();
     user.firstName = createUserDto.firstName;
     user.lastName = createUserDto.lastName;
+    user.username = createUserDto.username;
+    user.password = createUserDto.password;
 
     return this.usersRepository.save(user);
   }
@@ -25,6 +27,12 @@ export class UsersService {
 
   async findOne(id: number): Promise<User> {
     return this.usersRepository.findOneBy({ id: id });
+  }
+
+  async findOneBy(
+    where: FindOptionsWhere<User> | FindOptionsWhere<User>[],
+  ): Promise<User> {
+    return this.usersRepository.findOneBy(where);
   }
 
   async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
