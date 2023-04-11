@@ -1,5 +1,5 @@
 import { DataSource } from 'typeorm';
-import { HL7Message } from './entities/hl7.entity';
+import { HL7Entry, HL7Message } from './entities/hl7.entity';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const mllp = require('mllp-node');
@@ -15,6 +15,11 @@ export const HL7Providers = [
       const hl7Server = new mllp.MLLPServer(HL7_HOST, HL7_PORT, () => {});
       return hl7Server;
     },
+  },
+  {
+    provide: 'HL7_ENTRY_REPOSITORY',
+    useFactory: (dataSource: DataSource) => dataSource.getRepository(HL7Entry),
+    inject: ['DATA_SOURCE'],
   },
   {
     provide: 'HL7_REPOSITORY',

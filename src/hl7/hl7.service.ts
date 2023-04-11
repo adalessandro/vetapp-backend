@@ -1,11 +1,13 @@
 import { Injectable, Inject, OnModuleInit } from '@nestjs/common';
 import { FindOptionsWhere, Repository } from 'typeorm';
 import { CreateHL7MessageDto } from './dto/create-hl7message.dto';
+import { HL7EntryService } from './hl7-entry.service';
 import { HL7Message } from './entities/hl7.entity';
 
 @Injectable()
 export class HL7Service implements OnModuleInit {
   constructor(
+    private hl7EntryService: HL7EntryService,
     @Inject('HL7_REPOSITORY')
     private hl7MessageRepository: Repository<HL7Message>,
     @Inject('HL7_SERVER')
@@ -15,6 +17,7 @@ export class HL7Service implements OnModuleInit {
   onModuleInit() {
     this.hl7Server.on('hl7', (data: string) => {
       this.create({ payload: data });
+      this.hl7EntryService.create({ payload: data });
     });
   }
 
