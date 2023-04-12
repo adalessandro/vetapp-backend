@@ -4,8 +4,9 @@ import { FindOptionsWhere, Repository } from 'typeorm';
 import { CreateHL7EntryDto, HL7EntryExcelFileDto } from './dto/hl7entry.dto';
 import { HL7Entry } from './entities/hl7.entity';
 import { joinDict } from 'src/common/lib/helpers';
-import { readFileSync, writeFileSync } from 'fs';
+import { readFile } from 'fs/promises';
 import { join } from 'path';
+import { hl7Constants } from './constants';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const hl7Standard = require('hl7-standard');
@@ -85,16 +86,27 @@ export class HL7EntryService {
     await this.hl7EntryRepository.delete(id);
   }
 
-  generateExcel(id: number): HL7EntryExcelFileDto {
-    //const hl7Entry: HL7Entry = await this.hl7EntryRepository.findOneBy({ id });
-    const templateFilename = 'files/hl7/excel-templates/hemograma-felino.xlsx';
-    const data = readFileSync(join(process.cwd(), templateFilename));
-    const template = new XlsxTemplate(data);
-    //const sheetNumber = 1;
-    //template.substitute(sheetNumber, values);
-    const outputData = template.generate();
-    const outputFilename = 'filename' + '.xlsx';
-    writeFileSync(join(process.cwd(), outputFilename), outputData, 'binary');
-    return { file: Buffer.from(outputData, 'binary'), filename: `${id}.xlsx` };
+  async generateExcel(hl7Entry: HL7Entry): Promise<HL7EntryExcelFileDto> {
+    const race = hl7Entry.patientRace.toLowerCase();
+    const templateFilename = hl7Constants.excelTemplates[race];
+
+    if (!templateFilename) {
+      throw new Error(
+        `Failed to load Excel template for patient race: ${race}`,
+      );
+    }
+
+    const templateFile = await readFile(join(process.cwd(), templateFilename));
+    const xlsxTemplate = new XlsxTemplate(templateFile);
+    const sheetNumber = 1;
+    xlsxTemplate.substitute(sheetNumber, hl7Entry);
+
+    const outputData = xlsxTemplate.generate();
+    const date = new Date(hl7Entry.observationDate).toISOString().split('T')[0];
+
+    return {
+      file: Buffer.from(outputData, 'binary'),
+      filename: `${date} - ${hl7Entry.patientAlias} - ${hl7Entry.patientName}.xlsx`,
+    };
   }
 }

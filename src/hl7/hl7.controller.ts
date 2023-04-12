@@ -5,12 +5,11 @@ import {
   Param,
   Delete,
   StreamableFile,
+  HttpStatus,
 } from '@nestjs/common';
 import { HL7Entry, HL7Message } from './entities/hl7.entity';
 import { HL7Service } from './hl7.service';
 import { HL7EntryService } from './hl7-entry.service';
-import { createReadStream } from 'fs';
-import { join } from 'path';
 import { Public } from '../auth/decorators/public.decorator';
 import type { Response } from 'express';
 
@@ -50,16 +49,29 @@ export class HL7EntryController {
 
   @Public()
   @Get('excel/:id')
-  getFile(
+  async getFile(
     @Param('id') id: string,
     @Res({ passthrough: true }) res: Response,
-  ): StreamableFile {
-    const excel = this.hl7EntryService.generateExcel(+id);
-    res.set({
-      'Content-Type': 'application/vnd.ms-excel',
-      'Content-Disposition': `attachment; filename="${excel.filename}"`,
-    });
-    return new StreamableFile(excel.file);
+  ): Promise<StreamableFile> {
+    const hl7Entry = await this.hl7EntryService.findOne(+id);
+
+    if (hl7Entry === null) {
+      res.sendStatus(HttpStatus.NOT_FOUND);
+      return null;
+    }
+
+    try {
+      const excel = await this.hl7EntryService.generateExcel(hl7Entry);
+      res.set({
+        'Content-Type': 'application/vnd.ms-excel',
+        'Content-Disposition': `attachment; filename="${excel.filename}"`,
+      });
+      return new StreamableFile(excel.file);
+    } catch (error) {
+      console.error(`${error}`);
+      res.sendStatus(HttpStatus.NOT_IMPLEMENTED);
+      return null;
+    }
   }
 
   @Delete(':id')
