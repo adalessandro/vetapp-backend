@@ -1,12 +1,16 @@
 import { parse as dateFormatParse } from 'date-format-parse';
 import { Injectable, Inject } from '@nestjs/common';
 import { FindOptionsWhere, Repository } from 'typeorm';
-import { CreateHL7EntryDto } from './dto/create-hl7entry.dto';
+import { CreateHL7EntryDto, HL7EntryExcelFileDto } from './dto/hl7entry.dto';
 import { HL7Entry } from './entities/hl7.entity';
 import { joinDict } from 'src/common/lib/helpers';
+import { readFileSync, writeFileSync } from 'fs';
+import { join } from 'path';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const hl7Standard = require('hl7-standard');
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const XlsxTemplate = require('xlsx-template');
 
 @Injectable()
 export class HL7EntryService {
@@ -79,5 +83,18 @@ export class HL7EntryService {
 
   async remove(id: number): Promise<void> {
     await this.hl7EntryRepository.delete(id);
+  }
+
+  generateExcel(id: number): HL7EntryExcelFileDto {
+    //const hl7Entry: HL7Entry = await this.hl7EntryRepository.findOneBy({ id });
+    const templateFilename = 'files/hl7/excel-templates/hemograma-felino.xlsx';
+    const data = readFileSync(join(process.cwd(), templateFilename));
+    const template = new XlsxTemplate(data);
+    //const sheetNumber = 1;
+    //template.substitute(sheetNumber, values);
+    const outputData = template.generate();
+    const outputFilename = 'filename' + '.xlsx';
+    writeFileSync(join(process.cwd(), outputFilename), outputData, 'binary');
+    return { file: Buffer.from(outputData, 'binary'), filename: `${id}.xlsx` };
   }
 }

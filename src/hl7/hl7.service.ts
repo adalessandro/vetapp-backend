@@ -1,6 +1,6 @@
 import { Injectable, Inject, OnModuleInit } from '@nestjs/common';
 import { FindOptionsWhere, Repository } from 'typeorm';
-import { CreateHL7MessageDto } from './dto/create-hl7message.dto';
+import { CreateHL7MessageDto } from './dto/hl7message.dto';
 import { HL7EntryService } from './hl7-entry.service';
 import { HL7Message } from './entities/hl7.entity';
 
