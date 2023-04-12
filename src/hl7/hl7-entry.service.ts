@@ -6,7 +6,7 @@ import { HL7Entry } from './entities/hl7.entity';
 import { joinDict } from 'src/common/lib/helpers';
 import { readFile } from 'fs/promises';
 import { join } from 'path';
-import { hl7Constants } from './constants';
+import { hl7Constants } from './hl7.constants';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const hl7Standard = require('hl7-standard');
