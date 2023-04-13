@@ -1,6 +1,6 @@
 export const hl7Constants = {
   excelTemplates: {
-    gato: 'files/hl7/excel-templates/hemograma-felino.xlsx',
-    perro: 'files/hl7/excel-templates/hemograma-canino.xlsx',
+    gato: 'files/hl7/excel-templates/Laboratorio Felino.xlsx',
+    perro: 'files/hl7/excel-templates/Laboratorio Canino.xlsx',
   },
 };
