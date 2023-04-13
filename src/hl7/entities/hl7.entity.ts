@@ -164,3 +164,38 @@ export class HL7Message {
   @Column({ nullable: false, type: 'text' })
   payload: string;
 }
+
+export function hl7EntryValues(hl7Entry): Record<string, string> {
+  const ret = {
+    fecha: new Date(hl7Entry.observationDate).toLocaleString(),
+    paciente: hl7Entry.patientAlias,
+    sexo: hl7Entry.patientSex,
+    edad: hl7Entry.resultAge,
+    especie: hl7Entry.patientRace,
+    responsable: hl7Entry.patientName,
+    solicita: hl7Entry.observationCollector,
+    WBC: hl7Entry.wbcValue,
+    'LYM%': hl7Entry.lymPValue,
+    'GRAN%': hl7Entry.granPValue,
+    'MID%': hl7Entry.midPValue,
+    'LYM#': hl7Entry.lymNValue,
+    'GRAN#': hl7Entry.granNValue,
+    'MID#': hl7Entry.midNValue,
+    RBC: hl7Entry.rbcValue,
+    HGB: hl7Entry.hgbValue,
+    HCT: hl7Entry.hctValue,
+    MCV: hl7Entry.mcvValue,
+    MCH: hl7Entry.mchValue,
+    MCHC: hl7Entry.mchcValue,
+    RDWCV: hl7Entry.rdwcvValue,
+    RDWSD: hl7Entry.rdwsdValue,
+    PLT: hl7Entry.pltValue,
+    MPV: hl7Entry.mpvValue,
+    PDW: hl7Entry.pdwValue,
+    PCT: hl7Entry.pctValue,
+  };
+  for (const [k, v] of Object.entries(ret)) {
+    ret[k] = String(v).replace(',', '.');
+  }
+  return ret;
+}

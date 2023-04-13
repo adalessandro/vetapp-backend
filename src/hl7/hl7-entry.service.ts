@@ -2,7 +2,7 @@ import { parse as dateFormatParse } from 'date-format-parse';
 import { Injectable, Inject } from '@nestjs/common';
 import { FindOptionsWhere, Repository } from 'typeorm';
 import { CreateHL7EntryDto, HL7EntryExcelFileDto } from './dto/hl7entry.dto';
-import { HL7Entry } from './entities/hl7.entity';
+import { HL7Entry, hl7EntryValues } from './entities/hl7.entity';
 import { joinDict } from 'src/common/lib/helpers';
 import { readFile } from 'fs/promises';
 import { join } from 'path';
@@ -98,8 +98,7 @@ export class HL7EntryService {
 
     const templateFile = await readFile(join(process.cwd(), templateFilename));
     const xlsxTemplate = new XlsxTemplate(templateFile);
-    const sheetNumber = 1;
-    xlsxTemplate.substitute(sheetNumber, hl7Entry);
+    xlsxTemplate.substituteAll(hl7EntryValues(hl7Entry));
 
     const outputData = xlsxTemplate.generate();
     const date = new Date(hl7Entry.observationDate).toISOString().split('T')[0];
