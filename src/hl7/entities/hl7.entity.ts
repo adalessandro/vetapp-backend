@@ -1,4 +1,6 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { IPostgresInterval } from 'postgres-interval';
+import { intervalDateToString } from 'src/common/lib/helpers';
 
 @Entity()
 export class HL7Entry {
@@ -19,8 +21,8 @@ export class HL7Entry {
   @Column({ nullable: true })
   observationCollector: string;
 
-  @Column({ nullable: true })
-  resultAge: number;
+  @Column({ type: 'interval', nullable: true })
+  resultAge: IPostgresInterval;
 
   @Column({ nullable: true })
   wbcValue: string;
@@ -170,7 +172,7 @@ export function hl7EntryValues(hl7Entry): Record<string, string> {
     fecha: new Date(hl7Entry.observationDate).toLocaleString().split(',')[0],
     paciente: hl7Entry.patientAlias,
     sexo: hl7Entry.patientSex,
-    edad: hl7Entry.resultAge,
+    edad: intervalDateToString(hl7Entry.resultAge),
     especie: hl7Entry.patientRace,
     responsable: hl7Entry.patientName,
     solicita: hl7Entry.observationCollector,

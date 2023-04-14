@@ -3,7 +3,7 @@ import { Injectable, Inject } from '@nestjs/common';
 import { FindOptionsWhere, Repository } from 'typeorm';
 import { CreateHL7EntryDto, HL7EntryExcelFileDto } from './dto/hl7entry.dto';
 import { HL7Entry, hl7EntryValues } from './entities/hl7.entity';
-import { joinDict } from 'src/common/lib/helpers';
+import { joinDict, parseInterval } from 'src/common/lib/helpers';
 import { readFile } from 'fs/promises';
 import { join } from 'path';
 import { hl7Constants } from './hl7.constants';
@@ -37,7 +37,9 @@ export class HL7EntryService {
     );
     hl7Entry.observationCollector = entry.get('OBR.10');
 
-    hl7Entry.resultAge = entry.get('OBX.5', 3);
+    const resultAgeValue = entry.get('OBX.5', 3);
+    const resultAgeUnit = entry.get('OBX.6', 3);
+    hl7Entry.resultAge = parseInterval(resultAgeValue, resultAgeUnit);
 
     function getOBXTriplet(id, index) {
       hl7Entry[`${id}Value`] = entry.get('OBX.5', index);
