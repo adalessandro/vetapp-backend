@@ -1,12 +1,14 @@
 import { DataSource } from 'typeorm';
 
+const DB_HOST = process.env.DB_HOST || 'localhost';
+
 export const databaseProviders = [
   {
     provide: 'DATA_SOURCE',
     useFactory: async () => {
       const dataSource = new DataSource({
         type: 'postgres',
-        host: 'localhost',
+        host: DB_HOST,
         port: 5432,
         username: 'postgres',
         password: 'changeme',
