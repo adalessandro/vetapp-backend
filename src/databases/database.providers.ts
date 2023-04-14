@@ -10,7 +10,7 @@ export const databaseProviders = [
         port: 5432,
         username: 'postgres',
         password: 'changeme',
-        database: 'testdb',
+        database: 'vetappdb',
         entities: [__dirname + '/../**/*.entity{.ts,.js}'],
         synchronize: true,
       });
