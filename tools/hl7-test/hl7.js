@@ -9,7 +9,7 @@ if (!filename) {
   process.exit(1);
 }
 
-const HL7_HOST = process.env.HL7_HOST || 'localhost';
+const HL7_HOST = process.env.HL7_HOST || '0.0.0.0';
 
 const parser = new hl7.Parser({ segmentSeperator: '\n' });
 const client = hl7.Server.createTcpClient({
