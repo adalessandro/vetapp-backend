@@ -197,7 +197,7 @@ export function hl7EntryValues(hl7Entry): Record<string, string> {
     PCT: hl7Entry.pctValue,
   };
   for (const [k, v] of Object.entries(ret)) {
-    ret[k] = String(v).replace(',', '.');
+    ret[k] = String(v).replace('.', ',');
   }
   return ret;
 }
