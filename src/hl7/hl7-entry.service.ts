@@ -42,7 +42,9 @@ export class HL7EntryService {
     hl7Entry.resultAge = parseInterval(resultAgeValue, resultAgeUnit);
 
     function getOBXTriplet(id, index) {
-      hl7Entry[`${id}Value`] = entry.get('OBX.5', index);
+      hl7Entry[`${id}Value`] = parseFloat(
+        entry.get('OBX.5', index).replace(',', '.'),
+      );
       hl7Entry[`${id}Unit`] = entry.get('OBX.6', index);
       hl7Entry[`${id}Range`] = entry.get('OBX.7', index);
     }
