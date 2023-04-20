@@ -169,7 +169,7 @@ export class HL7Message {
 
 export function hl7EntryValues(hl7Entry): Record<string, number | string> {
   const ret = {
-    fecha: new Date(hl7Entry.observationDate).toLocaleString().split(',')[0],
+    fecha: new Date(hl7Entry.observationDate).toLocaleDateString(),
     paciente: hl7Entry.patientAlias,
     sexo: hl7Entry.patientSex,
     edad: intervalDateToString(hl7Entry.resultAge),

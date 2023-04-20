@@ -105,7 +105,7 @@ export class HL7EntryService {
     xlsxTemplate.substituteAll(hl7EntryValues(hl7Entry));
 
     const outputData = xlsxTemplate.generate();
-    const date = new Date(hl7Entry.observationDate).toISOString().split('T')[0];
+    const date = new Date(hl7Entry.observationDate).toLocaleDateString();
 
     return {
       file: Buffer.from(outputData, 'binary'),
