@@ -3,10 +3,12 @@ import { FindOptionsWhere, Repository } from 'typeorm';
 import { CreateHL7MessageDto } from './dto/hl7message.dto';
 import { HL7EntryService } from './hl7-entry.service';
 import { HL7Message } from './entities/hl7.entity';
+import { EventsGateway } from '../events/events.gateway';
 
 @Injectable()
 export class HL7Service implements OnModuleInit {
   constructor(
+    private eventsGateway: EventsGateway,
     private hl7EntryService: HL7EntryService,
     @Inject('HL7_REPOSITORY')
     private hl7MessageRepository: Repository<HL7Message>,
@@ -15,9 +17,10 @@ export class HL7Service implements OnModuleInit {
   ) {}
 
   onModuleInit() {
-    this.hl7Server.on('hl7', (data: string) => {
+    this.hl7Server.on('hl7', async (data: string) => {
       this.create({ payload: data });
-      this.hl7EntryService.create({ payload: data });
+      const hl7Entry = await this.hl7EntryService.create({ payload: data });
+      this.eventsGateway.server.emit('hl7-entry-new', { id: hl7Entry.id });
     });
   }
 
